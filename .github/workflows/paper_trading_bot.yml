@@ -2,10 +2,13 @@ name: Paper Trading Bot - Every 15 Minutes (Market Hours IST)
 
 on:
   schedule:
-    # Runs every 15 minutes between 4:00 and 9:30 UTC (which is 9:30–15:00 IST)
+    # Runs every 15 minutes between 4:00 and 9:30 UTC (9:30–15:00 IST)
     - cron: "*/15 4-9 * * 1-5"
 
-  workflow_dispatch:  # Manual run
+  workflow_dispatch:
+
+permissions:
+  contents: write   # REQUIRED for git push
 
 jobs:
   run-bot:
@@ -33,11 +36,14 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Commit CSV changes
         run: |
-          git add *.csv || true
+          git add -A
           git commit -m "Auto-update: Paper trading CSV logs" || echo "No changes to commit"
+
+      - name: Push Changes
+        run: |
           git push
